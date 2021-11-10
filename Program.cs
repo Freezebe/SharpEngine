@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using GLFW;
+using Microsoft.VisualBasic.CompilerServices;
 using OpenGL;
 using static OpenGL.Gl;
 
@@ -24,6 +25,13 @@ namespace SharpEngine
             this.y = y;
             this.z = 0;
         }
+
+        public static Vector operator *(Vector v, float f)
+        {
+            return new Vector(v.x * f, v.y * f, v.z * f);
+        }
+        // add +, - and /
+
     }
 
     
