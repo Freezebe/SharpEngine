@@ -8,6 +8,17 @@ namespace SharpEngine
 {
     class Program
     {
+        static float[] vertices = new float[]
+        {
+            -.5f, -.5f, 0f,
+            .5f, -.5f, 0f,
+            0f, .5f, 0f
+        };
+
+        private const int VertexX = 0;
+        private const int VertexY = 1;
+        private const int VertexSize = 3;
+        
         static void Main(string[] args)
         {
             
@@ -22,20 +33,30 @@ namespace SharpEngine
             while (!Glfw.WindowShouldClose(window))
             {
                 Glfw.PollEvents(); // react to window changes (position etc.)
-                glDrawArrays(GL_TRIANGLES, 0, 3);
-                glFlush();
+                ClearScreen();
+                Render();
+                for (var i = VertexY; i < vertices.Length; i += VertexSize)
+                {
+                    vertices[i] -= 0.0001f;
+                }
+                UpdateTriangleBuffer();
             }
         }
 
-        private static unsafe void LoadTriangleIntoBuffer()
+        static void Render()
         {
-            float[] vertices = new float[]
-            {
-                -.5f, -.5f, 0f,
-                .5f, -.5f, 0f,
-                0f, .5f, 0f
-            };
+            glDrawArrays(GL_TRIANGLES, 0, vertices.Length/VertexSize);
+            glFlush();
+        }
 
+        private static void ClearScreen()
+        {
+            glClearColor(.2f, .05f, .2f, 1);
+            glClear(GL_COLOR_BUFFER_BIT);
+        }
+
+        static unsafe void LoadTriangleIntoBuffer()
+        {
             // load the vertices into a buffer
             var vertexArray = glGenVertexArray();
             var vertexBuffer = glGenBuffer();
@@ -48,22 +69,27 @@ namespace SharpEngine
                     glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.Length, vertex, GL_STATIC_DRAW);
                 }
 
-                glVertexAttribPointer(0, 3, GL_FLOAT, false, 3 * sizeof(float), NULL);
+                glVertexAttribPointer(0, VertexSize, GL_FLOAT, false, VertexSize * sizeof(float), NULL);
             }
 
             glEnableVertexAttribArray(0);
+        }
+        static unsafe void UpdateTriangleBuffer() {
+            fixed (float* vertex = &vertices[0]) {
+                glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.Length, vertex, GL_STATIC_DRAW);
+            }
         }
 
         private static void CreateShaderProgram()
         {
             // create vertex shader
             var vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, File.ReadAllText("Shaders/red-triangle.vert.glsl"));
+            glShaderSource(vertexShader, File.ReadAllText("Shaders/screen-coordinates.vert.glsl"));
             glCompileShader(vertexShader);
 
             // create fragment shader
             var fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-            glShaderSource(fragmentShader, File.ReadAllText("Shaders/red-triangle.frag"));
+            glShaderSource(fragmentShader, File.ReadAllText("Shaders/green.frag"));
             glCompileShader(fragmentShader);
 
             // create shader program - rendering pipeline
