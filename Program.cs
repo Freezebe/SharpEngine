@@ -10,9 +10,19 @@ namespace SharpEngine
     {
         static float[] vertices = new float[]
         {
-            -.5f, -.5f, 0f,
-            .5f, -.5f, 0f,
-            0f, .5f, 0f
+            //vertex 1
+            -.1f, -.1f, 0f,
+            //vertex 2
+            .1f, -.1f, 0f,
+            //vertex 3
+            0f, .1f, 0f,
+            //vertex 4
+            .4f, .4f, 0f,
+            //vertex 5
+            .6f, .4f, 0f,
+            //vertex 6
+            .5f, .6f, 0f
+            
         };
 
         private const int VertexX = 0;
@@ -35,12 +45,55 @@ namespace SharpEngine
                 Glfw.PollEvents(); // react to window changes (position etc.)
                 ClearScreen();
                 Render();
-                for (var i = VertexY; i < vertices.Length; i += VertexSize)
-                {
-                    vertices[i] -= 0.0001f;
-                }
+                ScaleUp();
                 UpdateTriangleBuffer();
             }
+        }
+
+        static void DownMovement()
+        {
+            for (var i = VertexY; i < vertices.Length; i += VertexSize)
+            {
+                vertices[i] -= 0.0001f;
+            }
+        }
+        
+        static void RightMovement()
+        {
+            for (var i = VertexX; i < vertices.Length; i += VertexSize)
+            {
+                vertices[i] += 0.0001f;
+            }
+        }
+
+        static void Shrink()
+        {
+            for (int iteration = 0; iteration < vertices.Length; iteration++)
+            {
+                vertices[iteration] *= 0.9999f;
+            }
+            
+            
+        }
+        
+        static void ScaleUp()
+        {
+            for (int iteration = 0; iteration < vertices.Length; iteration ++)
+            {
+                vertices[iteration] *= 1.0001f;
+            }
+            
+            
+        }
+        
+        static void ScaleUpY()
+        {
+            for (int iteration = VertexY; iteration < vertices.Length; iteration += VertexSize)
+            {
+                vertices[iteration] *= 1.0001f;
+            }
+            
+            
         }
 
         static void Render()
