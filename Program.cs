@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Numerics;
 using GLFW;
 using Microsoft.VisualBasic.CompilerServices;
 using OpenGL;
@@ -26,11 +27,35 @@ namespace SharpEngine
             this.z = 0;
         }
 
+        public static Vector Max(Vector a, Vector b)
+        {
+            return new Vector(MathF.Max(a.x, b.x), MathF.Max(a.y, b.y), MathF.Max(a.z, b.z));
+        }
+        public static Vector Min(Vector a, Vector b)
+        {
+            return new Vector(MathF.Min(a.x, b.x), MathF.Min(a.y, b.y), MathF.Min(a.z, b.z));
+        }
+
         public static Vector operator *(Vector v, float f)
         {
             return new Vector(v.x * f, v.y * f, v.z * f);
         }
-        // add +, - and /
+        
+        public static Vector operator +(Vector v, Vector u)
+        {
+            return new Vector(v.x + u.x, v.y + u.y, v.z + u.z);
+        }
+        
+        public static Vector operator -(Vector v, Vector u)
+        {
+            return new Vector(v.x - u.x, v.y - u.y, v.z - u.z);
+        }
+        public static Vector operator /(Vector v, float f)
+        {
+            return new Vector(v.x / f, v.y / f, v.z / f);
+        }
+        
+        
 
     }
 
@@ -43,9 +68,9 @@ namespace SharpEngine
             new Vector(-.1f, -.1f),
             new Vector(.1f, -.1f),
             new Vector(0f, .1f),
-            new Vector(.4f, .4f),
-            new Vector(.6f, .4f),
-            new Vector(.5f, .6f)
+            //new Vector(.4f, .4f),
+            //new Vector(.6f, .4f),
+            //new Vector(.5f, .6f)
         };
 
         private const int VertexX = 0;
@@ -54,7 +79,7 @@ namespace SharpEngine
         
         static void Main(string[] args)
         {
-            
+           
              // initialize and configure
              var window = CreateWindow();
 
@@ -63,12 +88,79 @@ namespace SharpEngine
              CreateShaderProgram();
 
             // engine rendering loop
+            var direction = new Vector(0.002f, 0.001f);
+            var scale = 1f;
+            var multiplier = 0.999f;
             while (!Glfw.WindowShouldClose(window))
             {
                 Glfw.PollEvents(); // react to window changes (position etc.)
                 ClearScreen();
                 Render(window);
-                ScaleUp();
+              
+
+                var min = vertices[0];
+                for (int i = 1; i < vertices.Length; i++)
+                {
+                    min = Vector.Min(min, vertices[i]);
+                }
+                var max = vertices[0];
+                for (int i = 1; i < vertices.Length; i++)
+                {
+                    max = Vector.Max(max, vertices[i]);
+                }
+
+                var center = (max + min) / 2;
+                
+                for (var i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i] -= center;
+                }
+                for (var i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i] *= multiplier;
+                }
+                for (var i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i] += center;
+                }
+
+                scale *= multiplier;
+
+                if (scale <= 0.5f)
+                {
+                    multiplier = 1.001f;
+                }
+
+                if (scale >= 2)
+                {
+                    multiplier = 0.999f;
+                }
+                
+                for (var i = 0; i < vertices.Length; i++)
+                {
+                    vertices[i] += direction;
+                }
+
+                for (var i = 0; i < vertices.Length; i++)
+                {
+                    if (vertices[i].x >= 1 && direction.x > 0|| vertices[i].x <= -1 && direction.x < 0)
+                    {
+                        direction.x *= -1.01f;
+                        break;
+                    }
+                }
+                
+                
+                for (var i = 0; i < vertices.Length; i++)
+                {
+                    if (vertices[i].y >= 1 && direction.y > 0 || vertices[i].y <=-1 && direction.y < 0)
+                    {
+                        direction.y *= -1.01f;
+                        break;
+                    }
+                }
+                
+                
                 UpdateTriangleBuffer();
             }
         }
