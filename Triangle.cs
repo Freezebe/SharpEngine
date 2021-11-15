@@ -8,6 +8,7 @@ namespace SharpEngine
     public class Triangle
     {
         Vertex[] vertices;
+        Matrix transform = Matrix.Identity;
         uint vertexArray;
         uint vertexBuffer;
 
@@ -36,15 +37,17 @@ namespace SharpEngine
 
         public void Move(Vector direction)
         {
-                
-            for (var i = 0; i < vertices.Length; i++)
-            {
-                vertices[i].position += direction;
-            }
+            this.transform *= Matrix.Translation(direction);
+        }
+        
+        public void Scale(float multiplier)
+        {
+          
         }
             
         public unsafe void Render() {
             this.material.Use();
+            this.material.SetTransform(this.transform);
             glBindVertexArray(vertexArray);
             glBindBuffer(GL_ARRAY_BUFFER, this.vertexBuffer);
             fixed (Vertex* vertex = &this.vertices[0]) {
@@ -80,32 +83,9 @@ namespace SharpEngine
         {
             return (GetMaxBounds() + GetMinBounds()) / 2;
         }
-        public void Scale(float multiplier)
-        {
-            var center = GetCenter();
 
-            Move(center*-1);
-            for (var i = 0; i < vertices.Length; i++)
-            {
-                vertices[i].position *= multiplier;
-            }
-            Move(center);
-
-            this.CurrentScale *= multiplier;
-
-        }
-        
         public void Rotate(float rotation) {
-            var center = GetCenter();
-            Move(center*-1);
-            for (int i = 0; i < this.vertices.Length; i++) {
-                var currentRotation = Vector.Angle(this.vertices[i].position);
-                var distance = vertices[i].position.GetMagnitude();
-                var newX = MathF.Cos(currentRotation + rotation);
-                var newY = MathF.Sin(currentRotation + rotation);
-                vertices[i].position = new Vector(newX, newY) * distance;
-            }
-            Move(center);
+            
         }    
 
 

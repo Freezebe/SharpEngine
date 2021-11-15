@@ -46,11 +46,16 @@ namespace SharpEngine
         {
             return new Vector(v.x + u.x, v.y + u.y, v.z + u.z);
         }
-        
+
         public static Vector operator -(Vector v, Vector u)
         {
             return new Vector(v.x - u.x, v.y - u.y, v.z - u.z);
         }
+        
+        public static Vector operator -(Vector v) {
+            return new Vector(-v.x, -v.y, -v.z);
+        }
+        
         public static Vector operator /(Vector v, float f)
         {
             return new Vector(v.x / f, v.y / f, v.z / f);

@@ -27,6 +27,13 @@ namespace SharpEngine {
             glDeleteShader(fragmentShader);
         }
 
+        public unsafe void SetTransform(Matrix matrix)
+        {
+            int transformlocation = glGetUniformLocation(this.program, "transform");
+           
+            glUniformMatrix4fv(transformlocation,1,true, &matrix.m11);
+        }
+
         public void Use() {
             glUseProgram(program);
         }

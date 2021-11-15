@@ -39,14 +39,20 @@ namespace SharpEngine
         {
            
             var window = new Window();
-            var material = new Material("Shaders/position-color.vert.glsl", "Shaders/vertex-color.frag");
+            var material = new Material("Shaders/world-position-color.vert.glsl", "Shaders/vertex-color.frag");
             var scene = new Scene();
             window.Load(scene);
 
-            FillSceneWithTriangles(scene, material);
+            //FillSceneWithTriangles(scene, material);
+            var newTriangle = new Triangle(new Vertex[] {
+                new Vertex(new Vector(-.1f, 0f), Color.Red),
+                new Vertex(new Vector(.1f, 0f), Color.Green),
+                new Vertex(new Vector(0f, .133f), Color.Blue)
+            }, material);
+            scene.Add(newTriangle);
             
             // engine rendering loop
-            var direction = new Vector(0.0003f, 0.0003f);
+            var direction = new Vector(0.001f, 0.001f);
             var multiplier = 0.999f;
             var rotation = 0.005f;
             while (window.IsOpen()) {
@@ -68,12 +74,12 @@ namespace SharpEngine
                 
                     // 4. Check the X-Bounds of the Screen
                     if (triangle.GetMaxBounds().x >= 1 && direction.x > 0 || triangle.GetMinBounds().x <= -1 && direction.x < 0) {
-                        direction.x *= -1;
+                        direction.x *= -1.1f;
                     }
                 
                     // 5. Check the Y-Bounds of the Screen
                     if (triangle.GetMaxBounds().y >= 1 && direction.y > 0 || triangle.GetMinBounds().y <= -1 && direction.y < 0) {
-                        direction.y *= -1;
+                        direction.y *= -1.1f;
                     }
                     
                     
