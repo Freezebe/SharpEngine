@@ -28,6 +28,14 @@ namespace SharpEngine
         {
             return new Vector(MathF.Min(a.x, b.x), MathF.Min(a.y, b.y), MathF.Min(a.z, b.z));
         }
+        
+        public static float Angle(Vector v) {
+            return MathF.Atan2(v.y, v.x);
+        }
+
+        public float GetMagnitude() {
+            return MathF.Sqrt(x * x + y * y + z * z);
+        }
 
         public static Vector operator *(Vector v, float f)
         {
