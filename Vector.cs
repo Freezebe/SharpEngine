@@ -60,6 +60,12 @@ namespace SharpEngine
         {
             return new Vector(v.x / f, v.y / f, v.z / f);
         }
+
+        public Vector Normalize()
+        {
+            var magnitude = GetMagnitude();
+            return magnitude > 0 ? this / GetMagnitude() : this;
+        }
         
         
 
