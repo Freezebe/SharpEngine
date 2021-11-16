@@ -9,7 +9,7 @@ namespace SharpEngine {
         public Material(string vertexShaderPath, string fragmentShaderPath) {
             // create vertex shader
             var vertexShader = glCreateShader(GL_VERTEX_SHADER);
-            glShaderSource(vertexShader, File.ReadAllText("Shaders/position-color.vert.glsl"));
+            glShaderSource(vertexShader, File.ReadAllText("Shaders/world-position-color.vert.glsl"));
             glCompileShader(vertexShader);
 
             // create fragment shader
