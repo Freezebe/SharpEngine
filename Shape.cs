@@ -22,6 +22,14 @@ namespace SharpEngine
             LoadTriangleIntoBuffer();
             this.Transform = new Transform();
         }
+
+        public void SetColor(Color color)
+        {
+            for (var i = 0; i < vertices.Length; i++)
+            {
+                vertices[i].color = color;
+            }
+        }
         
         unsafe void LoadTriangleIntoBuffer() {
             vertexArray = glGenVertexArray();
