@@ -8,6 +8,7 @@ namespace SharpEngine
 
         public static Vector Forward => new Vector(0, 1);
         public static Vector Backward => new Vector(0, -1);
+        public static Vector Down => new Vector(0, -1);
         public static Vector Right => new Vector(1, 0);
         public static Vector Left => new Vector(-1, 0);
         public static Vector Zero => new Vector();
@@ -47,10 +48,16 @@ namespace SharpEngine
         public float GetMagnitude() {
             return MathF.Sqrt(x * x + y * y + z * z);
         }
+        public float GetSquareMagnitude() {
+            return x * x + y * y + z * z;
+        }
 
-        public static Vector operator *(Vector v, float f)
-        {
+        public static Vector operator *(Vector v, float f) {
             return new Vector(v.x * f, v.y * f, v.z * f);
+        }
+
+        public static Vector operator *(float f, Vector v) {
+            return new Vector(f * v.x, f * v.y, f * v.z);
         }
         
         public static Vector operator +(Vector v, Vector u)
@@ -78,7 +85,9 @@ namespace SharpEngine
             return magnitude > 0 ? this / GetMagnitude() : this;
         }
         
-        
+        public override string ToString() {
+            return $"Vector(X:{this.x}, Y:{this.y}, Z:{this.z}";
+        }
 
     }
 }

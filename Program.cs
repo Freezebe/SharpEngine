@@ -20,87 +20,42 @@ namespace SharpEngine
         
         static void Main(string[] args) {
             
+            var random = new Random();
             var window = new Window();
             var material = new Material("Shaders/world-position-color.vert", "Shaders/vertex-color.frag");
             var scene = new Scene();
+            var physics = new Physics(scene);
             window.Load(scene);
 
-            var shape = new Triangle(material);
-            shape.Transform.CurrentScale = new Vector(0.5f, 1f, 1f);
-            shape.Transform.Position = new Vector(0f, 0.5f);
-            scene.Add(shape);
+            for (var i = 0; i < 30; i++) {
+                var circle = new Circle(material);
+                var radius = GetRandomFloat(random, 0.3f);
+                circle.Transform.CurrentScale = new Vector(radius, radius, 1f);
+                circle.Transform.Position = new Vector(GetRandomFloat(random, -1f), GetRandomFloat(random, -1), 0f);
+                circle.velocity = -circle.Transform.Position.Normalize() * GetRandomFloat(random, 0.15f, 0.3f);
+                circle.Mass = MathF.PI * radius * radius;
+                scene.Add(circle);
+            }
             
-            var rectangle = new Rectangle(material);
-            shape.Transform.CurrentScale = new Vector(0.5f, 1f, 1f);
-            scene.Add(rectangle);
-
-            var circle = new Circle(material);
-            shape.Transform.CurrentScale = new Vector(0.5f, 1f, 1f);
-            circle.Transform.Position = new Vector(0.7f, 0f);
-            scene.Add(circle);
-
-            var ground = new Rectangle(material);
-            ground.Transform.CurrentScale = new Vector(10f, 1f, 1f);
-            ground.Transform.Position = new Vector(0f, -1f);
-            scene.Add(ground);
+            // var ground = new Rectangle(material);
+            // ground.Transform.CurrentScale = new Vector(10f, 1f, 1f);
+            // ground.Transform.Position = new Vector(0f, -1f);
+            // ground.gravityScale = 0;
+            // ground.Mass = 1f;
+            // scene.Add(ground);
 
             // engine rendering loop
-            const int fixedStepNumberPerSecond = 30;
+            const int fixedStepNumberPerSecond = 60;
             const float FixedDeltaTime = 1.0f / fixedStepNumberPerSecond;
             const float MovementSpeed = 0.5f;
-            double previousFixedStep = 0.0;
+            const int maxStepsPerFrame = 5;
+            var previousFixedStep = 0.0;
             while (window.IsOpen()) {
-                while (Glfw.Time > previousFixedStep + FixedDeltaTime) {
+                var stepCount = 0;
+                while (Glfw.Time > previousFixedStep + FixedDeltaTime && stepCount++ < maxStepsPerFrame) {
                     previousFixedStep += FixedDeltaTime;
-                    var WalkingDirection = new Vector();
-                    if (window.GetKey(Keys.W))
-                    {
-                        WalkingDirection += shape.Transform.Forward;
-                    }
-                    if (window.GetKey(Keys.A))
-                    {
-                        WalkingDirection += shape.Transform.Left;
-                    }
-                    if (window.GetKey(Keys.S))
-                    {
-                        WalkingDirection += shape.Transform.Backward;
-                    }
-                    if (window.GetKey(Keys.D))
-                    {
-                        WalkingDirection += shape.Transform.Right;
-                    }
-                    
-                    if (window.GetKey(Keys.Q))
-                    {
-                        var rotation = shape.Transform.Rotation;
-                        rotation.z += 2* MathF.PI * FixedDeltaTime;
-                        shape.Transform.Rotation = rotation;
-                    }
-                    if (window.GetKey(Keys.E))
-                    {
-                        var rotation = shape.Transform.Rotation;
-                        rotation.z -= 2* MathF.PI * FixedDeltaTime;
-                        shape.Transform.Rotation = rotation;
-                    }
-
-                    WalkingDirection = WalkingDirection.Normalize();
-                    shape.Transform.Position += WalkingDirection * MovementSpeed * FixedDeltaTime;
-
-                    float direction = Vector.Dot((rectangle.GetCenter() - shape.GetCenter()).Normalize(),shape.Transform.Forward);
-                    bool doesThePlayerFaceThisRectangle = direction > 0;
-                    if (doesThePlayerFaceThisRectangle)
-                    {
-                        rectangle.SetColor(Color.Green);
-                    }
-                    else
-                    {
-                        rectangle.SetColor(Color.Red);
-                    }
-                    float dotProduct = Vector.Dot((circle.GetCenter() - shape.GetCenter()).Normalize(), shape.Transform.Forward);
-                    float angle = MathF.Acos(dotProduct);
-                    float factor = angle / MathF.PI;
-                    circle.SetColor(new Color(factor, factor, factor, 1));
-
+                    physics.Update(FixedDeltaTime);
+                   
                 }
                 window.Render();
             }

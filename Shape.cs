@@ -13,7 +13,19 @@ namespace SharpEngine
 
         public Transform Transform { get; }
         public float CurrentScale { get; set; }
-
+        public Vector velocity;
+        public Vector linearForce;
+        public float gravityScale =1;
+        float mass = 1;
+        float massInverse = 1;
+        public float Mass {
+            get => this.mass;
+            set {
+                this.mass = value;
+                this.massInverse = float.IsPositiveInfinity(value) ? 0f : 1f / value;
+            }
+        }
+        public float MassInverse => this.massInverse;
         public Material material;
             
         public Shape(Vertex[] vertices, Material material) {
